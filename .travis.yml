@@ -1,0 +1,61 @@
+sudo: required
+dist: trusty
+language: ruby
+
+before_install:
+before_install:
+- gem install asciidoctor -v 1.5.2
+- gem install tilt
+- sudo pip install git+https://github.com/gitenberg-dev/gitberg
+- sudo pip install pillow
+- sudo pip install cssutils
+- sudo pip install docutils
+- sudo pip install roman
+- sudo pip install git+https://github.com/gitenberg-dev/pg-epubmaker
+script:
+- VERSION=`ruby -e "require 'yaml'; meta = YAML.load_file('metadata.yaml'); puts meta['_version'];"`
+- git clone https://github.com/gitenberg-dev/asciidoctor-htmlbook.git
+- sudo pip install -r asciidoctor-htmlbook/gitberg-machine/requirements.txt
+
+- /usr/bin/python -c "from gitenberg import travis; travis.build_epub()"
+- ebook-convert book.epub book.mobi
+- xvfb-run ebook-convert book.epub book.pdf
+branches:
+  only:
+  - master
+notifications:
+  webhooks:
+    urls:
+      - https://unglue.it/api/travisci/webhook
+    on_success: always
+    on_failure: never
+    on_start: never
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: dha+21Jt3Q6/etRp42n8pwI3wzF+FrzM3RbBc315oyQDNFMesKHhbQ+6Gv3PQK7yHxMQXaTU2Z8biinf3VSRVaKvDFxpww/aptpUXWPOq6cc0doLieQWNPpISt+ckDu85xByqtv+UmhbtFWOuU+TBWT3SNKB0GldY6AQNNWPTIKdLBDSPje96U2qOklk52NPT4RCqeEjlgN37y9o5JQRbs/QCDadrFcY4PcAc6EKYpPF8iSbeyj6gpUQgZWicCwx+1lSgWa5Pa7DPTLQWXYVRlqOPFJk8bKUIYKvIfo7hgRyGdLgb5ayCYQeHubGB2GvbLwjTbNk/KMnkhLNRKfrnzhmK6o1VtJDpO82y1og4zN5Gxkg0mwCC5qXrdbIKFqfcbhKwNDZVC7Y7QjZDGU8YpA0Ar+hS0oDqrOY18bh2J3u2YMgD25x+xugDk/OGgICyMVbl1CpJS6JmMhRDAUt8JjDJ5S6T3LimAFX2jw+pMQi1qo0aSgpTEygfcQfvcJIk9JMpdpE4CZx0DO34LzbNqnQccX0g9zay5uz2tb17H2TZFZrkOEfk07TWHxCpDLS3Ah91C0VepmuaYw7F4Lp4SWRCyw8MvgzdvSn1C6oaUp8NVCFFdDfi+QxwPifGSbKNDAsO7sSALE6sxJhWTXh8+H6KdtGIaGp2x2CJmnmQnM=
+  file:
+    - book.epub
+    - book.mobi
+    - book.pdf
+  "on":
+    repo: GITenberg/The-1990-CIA-World-Factbook_14
+addons:
+  apt:
+    packages:
+    - xsltproc
+    - xvfb
+    - calibre
+    - python-pip
+    - git
+    - python-dev
+    - libjpeg-dev
+    - libpng-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - zlib1g-dev
+    - python-lxml
+    - libxml2-dev
+    - libxslt1-dev
+    - tidy
