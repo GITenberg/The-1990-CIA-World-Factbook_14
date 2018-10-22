@@ -1,5 +1,5 @@
 _repo: The-1990-CIA-World-Factbook_14
-_version: 0.2.2
+_version: 0.2.3
 covers:
 - cover_type: generated
   image_path: cover.png
